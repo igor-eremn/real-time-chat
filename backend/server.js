@@ -19,7 +19,7 @@ const client = new MongoClient(uri, {
 });
 
 // Importing all routes
-const userRoutes = require('./routes/routes-user.js');
+const userRoutes = require('./routes/route-user.js');
 
 client.connect()
   .then(() => {

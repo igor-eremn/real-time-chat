@@ -1,5 +1,5 @@
 const express = require('express');
-const UserModel = require('../models/user-model.js');
+const UserModel = require('../models/model-user.js');
 const { ObjectId } = require('mongodb');
 
 module.exports = (client) => {
