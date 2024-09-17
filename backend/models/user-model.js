@@ -1,33 +1,77 @@
 const { ObjectId } = require('mongodb');
+const bcrypt = require('bcrypt');
 
 class UserModel {
   constructor(client) {
-    this.userInfoCollection = client.db('DB1').collection('chat-users');
-  }
-  async createUser(userData) {
-    return await this.userInfoCollection.insertOne(userData);
+    this.userCollection = client.db('DB1').collection('chat-users');
   }
 
-  async deleteUser(email) {
-    return await this.userInfoCollection.deleteOne({ email: email});
+  async createUser({ username, name, password }) {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("🚀 ~ UserModel ~ createUser ~ hashedPassword:", hashedPassword)
+    const userData = {
+      username,
+      name,
+      password: hashedPassword,
+      created: new Date()
+    };
+    
+    return await this.userCollection.insertOne(userData);
+  }
+
+  async deleteUser(userId) {
+    return await this.userCollection.deleteOne({ _id: new ObjectId(userId) });
   }
 
   async findUserByEmail(email) {
-    return await this.userInfoCollection.findOne({ email: email });
+    return await this.userCollection.findOne({ email });
   }
 
   async findUserById(id) {
-    return await this.userInfoCollection.findOne({ _id: new ObjectId(id) });
+    return await this.userCollection.findOne({ _id: new ObjectId(id) });
   }
 
   async findUserByUsername(username) {
-    return await this.userInfoCollection.findOne({ username: username });
+    return await this.userCollection.findOne({ username });
   }
 
-  async findUserByName(name) {
-    return await this.userInfoCollection.findOne({ name: name });
+  async updateUser(userId, updateData) {
+    return await this.userCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: updateData }
+    );
   }
 
+  async updatePassword(userId, newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    return await this.userCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: { password: hashedPassword } }
+    );
+  }
+
+  async verifyPassword(userId, password) {
+    const user = await this.findUserById(userId);
+    if (!user) return false;
+    return await bcrypt.compare(password, user.password);
+  }
+
+  async findAllUsers() {
+    return await this.userCollection.find({}).toArray();
+  }
+
+  async searchUsers(query) {
+    return await this.userCollection.find({
+      $or: [
+        { username: { $regex: query, $options: 'i' } },
+        { name: { $regex: query, $options: 'i' } }
+      ]
+    }).toArray();
+  }
+
+  async getUserCount() {
+    return await this.userCollection.countDocuments();
+  }
 }
 
 module.exports = UserModel;

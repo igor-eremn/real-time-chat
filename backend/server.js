@@ -18,11 +18,15 @@ const client = new MongoClient(uri, {
   },
 });
 
-//TODO: Unit Testing
+// Importing all routes
+const userRoutes = require('./routes/routes-user.js');
 
 client.connect()
   .then(() => {
     console.log('Connected to MongoDB');
+
+    // Using routes
+    app.use('/users', userRoutes(client));
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
