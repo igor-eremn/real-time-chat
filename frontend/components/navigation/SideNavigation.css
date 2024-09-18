@@ -1,5 +1,5 @@
 .side-navigation {
-  height: 99vh;
+  height: 99.8vh;
   background-color: #000000;
   color: white;
   transition: width 0.3s ease-in-out;
@@ -28,10 +28,9 @@
   
   .burger {
     position: relative;
-    width: 30px; /* Smaller width */
-    height: 24px; /* Smaller height */
+    width: 30px;
+    height: 24px;
     background: transparent;
-    cursor: pointer;
     display: block;
   }
   
@@ -113,19 +112,21 @@
   width: 85%;
   height: 40px;
   cursor: pointer;
+  text-decoration: none; /* Remove underline from links */
+  color: inherit; /* Use the color from parent */
   transition: all 0.3s, color 0.3s;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0);
-}
-
-.side-navigation.expanded .menu-item {
-  width: 87%;
 }
 
 .menu-item:hover {
   background-color: #ffffff;
   color: black;
   border: 1px solid white;
+}
+
+.side-navigation.expanded .menu-item {
+  width: 87%;
 }
 
 .menu-label {

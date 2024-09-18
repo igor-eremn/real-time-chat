@@ -1,0 +1,18 @@
+.page-container {
+    height: 100vh;
+    width: 100%;
+    border: 1px solid white;
+    border-radius: 50px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    background-color: #000;
+    color: #fff;
+  }
+  
+  .page-content {
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
+  }
+  

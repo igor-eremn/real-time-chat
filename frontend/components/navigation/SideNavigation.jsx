@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { IoHome, IoChatbubble, IoSettings, IoPerson } from "react-icons/io5";
+import { Link } from 'react-router-dom';
 import './SideNavigation.css';
 
 const SideNavigation = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const topMenuItems = [
-    { icon: <IoHome size={24} />, label: 'Home' },
-    { icon: <IoChatbubble size={24} />, label: '1Room' },
-    { icon: <IoChatbubble size={24} />, label: '2Room' },
-    { icon: <IoChatbubble size={24} />, label: '3Room' },
+    { icon: <IoHome size={24} />, label: 'Home', path: '/' },
+    { icon: <IoChatbubble size={24} />, label: '1Room', path: '/chat' },
+    { icon: <IoChatbubble size={24} />, label: '2Room', path: '/chat' },
+    { icon: <IoChatbubble size={24} />, label: '3Room', path: '/chat' },
   ];
 
   return (
@@ -29,22 +30,22 @@ const SideNavigation = () => {
       <div className="menu-container">
         <div className="menu-top">
           {topMenuItems.map((item, index) => (
-            <div key={index} className="menu-item">
+            <Link key={index} to={item.path} className="menu-item">
               {item.icon}
               <span className="menu-label">{item.label}</span>
-            </div>
+            </Link>
           ))}
         </div>
 
         <div className="menu-bottom">
-          <div className="menu-item">
+          <Link to="/user" className="menu-item">
             <IoPerson size={24} />
             <span className="menu-label">User</span>
-          </div>
-          <div className="menu-item">
+          </Link>
+          <Link to="/settings" className="menu-item">
             <IoSettings size={24} />
             <span className="menu-label">Settings</span>
-          </div>
+          </Link>
         </div>
       </div>
     </div>
