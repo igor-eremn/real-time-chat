@@ -1,19 +1,42 @@
 const { ObjectId } = require('mongodb');
 
+//TODO: delete all messages from user when deleting user
+
 class MessageModel {
   constructor(client) {
     this.messageCollection = client.db('DB1').collection('chat-messages');
+    this.MESSAGE_LIMIT = 50;
   }
 
   async createMessage({ messageContent, sender, chatId }) {
-    const messageData = {
-      messageContent,
-      sender: new ObjectId(sender),
-      chatId: new ObjectId(chatId),
-      timeSent: new Date(),
-      reactions: [] // Optional: for storing reactions to messages
-    };
-    return await this.messageCollection.insertOne(messageData);
+    const session = this.messageCollection.client.startSession();
+
+    try {
+      await session.withTransaction(async () => {
+        const messageData = {
+          messageContent,
+          sender: new ObjectId(sender),
+          chatId: new ObjectId(chatId),
+          timeSent: new Date(),
+          reactions: []
+        };
+
+        // Insert the new message
+        await this.messageCollection.insertOne(messageData, { session });
+
+        // Check the message count for this chat
+        const count = await this.getMessageCount(chatId);
+
+        // If we've exceeded the limit, delete the oldest message
+        if (count > this.MESSAGE_LIMIT) {
+          await this.deleteOldestMessage(chatId, session);
+        }
+      });
+
+      return { success: true };
+    } finally {
+      await session.endSession();
+    }
   }
 
   async getMessageById(messageId) {
@@ -22,8 +45,10 @@ class MessageModel {
 
   async getAllChatMessages(chatId) {
     return await this.messageCollection.find(
-      { chatId: new ObjectId(chatId)}
+      { chatId: new ObjectId(chatId) }
     )
+    .sort({ timeSent: -1 }) // Sort by newest first
+    .limit(this.MESSAGE_LIMIT)
     .toArray();
   }
 
@@ -37,7 +62,6 @@ class MessageModel {
     return await this.messageCollection.updateOne({ _id: new ObjectId(messageId) }, update);
   }
 
-  //TODO: check if user sent it and only then delete
   async deleteMessage(messageId) {
     return await this.messageCollection.deleteOne(
       { _id: new ObjectId(messageId) }
@@ -52,7 +76,18 @@ class MessageModel {
   }
 
   async getMessageCount(chatId) {
-    return await this.messageCollection.countDocuments({ chatId: new ObjectId(chatId), isDeleted: false });
+    return await this.messageCollection.countDocuments({ chatId: new ObjectId(chatId) });
+  }
+
+  async deleteOldestMessage(chatId, session) {
+    const oldestMessage = await this.messageCollection.findOne(
+      { chatId: new ObjectId(chatId) },
+      { sort: { timeSent: 1 }, session }
+    );
+
+    if (oldestMessage) {
+      await this.messageCollection.deleteOne({ _id: oldestMessage._id }, { session });
+    }
   }
 }
 

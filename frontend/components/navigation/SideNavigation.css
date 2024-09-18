@@ -1,0 +1,141 @@
+.side-navigation {
+  height: 99vh;
+  background-color: #000000;
+  color: white;
+  transition: width 0.3s ease-in-out;
+  width: 47px;
+  border-radius: 50px;
+  border: 1px solid white;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+}
+
+.side-navigation.expanded {
+  width: 130px;
+  border-radius: 20px;
+}
+
+.burger-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0; /* Adjusted padding */
+  }
+  
+  .burger {
+    position: relative;
+    width: 30px; /* Smaller width */
+    height: 24px; /* Smaller height */
+    background: transparent;
+    cursor: pointer;
+    display: block;
+  }
+  
+  .burger span {
+    display: block;
+    position: absolute;
+    height: 3px; /* Smaller height for bars */
+    width: 100%;
+    background: rgb(255, 255, 255);
+    border-radius: 9px;
+    opacity: 1;
+    left: 0;
+    transform: rotate(0deg);
+    transition: .25s ease-in-out;
+  }
+  
+  .burger span:nth-of-type(1) {
+    top: 0px;
+    transform-origin: left center;
+  }
+  
+  .burger span:nth-of-type(2) {
+    top: 50%;
+    transform: translateY(-50%);
+    transform-origin: left center;
+  }
+  
+  .burger span:nth-of-type(3) {
+    top: 100%;
+    transform-origin: left center;
+    transform: translateY(-100%);
+  }
+  
+  .side-navigation:hover .burger span:nth-of-type(1) {
+    transform: rotate(45deg);
+    top: 0px;
+    left: 3px; /* Adjusted position */
+  }
+  
+  .side-navigation:hover .burger span:nth-of-type(2) {
+    width: 0%;
+    opacity: 0;
+  }
+  
+  .side-navigation:hover .burger span:nth-of-type(3) {
+    transform: rotate(-45deg);
+    top: 20px; /* Adjusted position */
+    left: 3px; /* Adjusted position */
+  }
+  
+
+.menu-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.menu-top,
+.menu-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu-top {
+  padding-top: 2rem; /* Adjust as needed */
+}
+
+.menu-bottom {
+  padding-bottom: 1.5rem;
+}
+
+.menu-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 1rem;
+  width: 85%;
+  height: 40px;
+  cursor: pointer;
+  transition: all 0.3s, color 0.3s;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0);
+}
+
+.side-navigation.expanded .menu-item {
+  width: 87%;
+}
+
+.menu-item:hover {
+  background-color: #ffffff;
+  color: black;
+  border: 1px solid white;
+}
+
+.menu-label {
+  margin-left: 1rem;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, visibility 0s ease-in-out;
+}
+
+.side-navigation.expanded .menu-label {
+  visibility: visible;
+  opacity: 1;
+}
