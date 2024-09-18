@@ -2,7 +2,7 @@ const { ObjectId } = require('mongodb');
 
 class ChatModel {
   constructor(client) {
-    this.chatCollection = client.db('DB1').collection('chats');
+    this.chatCollection = client.db('DB1').collection('chat-chats');
   }
 
   async createChat({ name, description, participants, createdBy, isGroupChat }) {

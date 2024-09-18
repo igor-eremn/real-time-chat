@@ -20,6 +20,8 @@ const client = new MongoClient(uri, {
 
 // Importing all routes
 const userRoutes = require('./routes/route-user.js');
+const chatRoutes = require('./routes/route-chats.js');
+const messageRoutes = require('./routes/route-messages.js');
 
 client.connect()
   .then(() => {
@@ -27,6 +29,8 @@ client.connect()
 
     // Using routes
     app.use('/users', userRoutes(client));
+    app.use('/chats', chatRoutes(client));
+    app.use('/messages', messageRoutes(client));
 
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
