@@ -1,6 +1,7 @@
 const express = require('express');
 const UserModel = require('../models/model-user.js');
 const { ObjectId } = require('mongodb');
+const bcrypt = require('bcrypt');
 
 module.exports = (client) => {
   const router = express.Router();
@@ -39,13 +40,40 @@ module.exports = (client) => {
     }
   });
 
-  // (2) Get user by ID
+  // (2) Sign in (sign in)
+  router.post('/sign-in', async (req, res) => {
+    const { username, password } = req.body;
+    
+    try {
+        const user = await userModel.findUserByUsername(username);
+        console.log("🚀 ~ router.post ~ user:", user)
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        await bcrypt.compare(password, user.password, (err, passwordMatch) => {
+          if (err) {
+            console.log("🚀 ~ awaitbcrypt.compare ~ err:", err)
+            return res.status(500).json({ message: "Internal server error" });
+          }
+          if (!passwordMatch) {
+            console.log("🚀 ~ awaitbcrypt.compare ~ passwordMatch:", passwordMatch)
+            return res.status(401).json({ message: "Incorrect password" });
+          }
+        });
+        res.status(200).json({ message: "Login successful", userId: user._id });
+    } catch (error) {
+        console.log("🚀 ~ router.post ~ error:", error)
+        res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // (3) Get user by ID
   router.get('/:userId', userExists, (req, res) => {
     const { password, ...userWithoutPassword } = req.user;
     res.json(userWithoutPassword);
   });
 
-  // (3) Update user
+  // (4) Update user
   router.put('/:userId', userExists, async (req, res) => {
     try {
       const { username, name } = req.body;
@@ -63,7 +91,7 @@ module.exports = (client) => {
     }
   });
 
-  // (4) Delete user
+  // (5) Delete user
   router.delete('/:userId', userExists, async (req, res) => {
     try {
       await userModel.deleteUser(req.params.userId);
@@ -73,7 +101,7 @@ module.exports = (client) => {
     }
   });
 
-  // (5) Change password
+  // (6) Change password
   router.put('/:userId/change-password', userExists, async (req, res) => {
     try {
       const { currentPassword, newPassword } = req.body;
@@ -93,7 +121,7 @@ module.exports = (client) => {
     }
   });
 
-  // (6) Search users
+  // (7) Search users
   router.get('/search', async (req, res) => {
     try {
       const { query } = req.query;
@@ -107,7 +135,7 @@ module.exports = (client) => {
     }
   });
 
-  // (7) Get all users
+  // (8) Get all users
   router.get('/', async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;

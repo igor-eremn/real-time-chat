@@ -1,5 +1,5 @@
 const express = require('express');
-const ChatModel = require('../models/chat-model.js');
+const ChatModel = require('../models/model-chat.js');
 const { ObjectId } = require('mongodb');
 
 module.exports = (client) => {

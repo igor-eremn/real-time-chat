@@ -32,7 +32,12 @@ class UserModel {
   }
 
   async findUserByUsername(username) {
-    return await this.userCollection.findOne({ username });
+    try {
+        return await this.userCollection.findOne({ username });
+    } catch (error) {
+        console.error('Error finding user by username:', error);
+        throw error;
+    }
   }
 
   async updateUser(userId, updateData) {

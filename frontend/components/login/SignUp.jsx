@@ -1,22 +1,105 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Login.css';
 
 const SignUp = ({ flipFunc, specialFlipFunc }) => {
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
+    const [userInfo, setUserInfo] = useState(null);
+    const [error, setError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     const GoToSignIn = () => {
-        flipFunc();  // Regular flip
+        flipFunc();
     };
 
-    const GoToAccount = () => {
-        specialFlipFunc();  // Special flip to Account
+    const handleSignUp = async () => {
+        const newUserInfo = {
+            username,
+            name,
+            password
+        };
+        setUserInfo(newUserInfo);
+    
+        try {
+            const response = await fetch('http://localhost:3000/users/sign-up', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(newUserInfo),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                if (response.status === 409) {
+                    console.warn("Conflict: Username already exists");
+                    setErrorMessage(data.message);
+                    setError(true);
+                    return false; // Signup failed
+                } else if (response.status === 400) {
+                    console.warn("Bad Request: Missing fields or invalid data");
+                    setErrorMessage(data.message);
+                    setError(true);
+                    return false; // Signup failed
+                } else {
+                    console.warn(`Error ${response.status}: ${response.statusText}`);
+                    setErrorMessage(data.message);
+                    setError(true);
+                    return false; // Signup failed
+                }
+            } else {
+                console.log('User signed up successfully:', data);
+                setErrorMessage("");
+                setError(false); // Reset error on success
+                return true; // Signup successful
+            }
+        } catch (err) {
+            console.warn('Error:', err);
+            setError(true);
+            setErrorMessage('Something went wrong. Please try again.');
+            return false; // Signup failed
+        }
     };
+    
+    
+      
+
+    const GoToAccount = async () => {
+        const success = await handleSignUp();
+
+        if (success) {
+            specialFlipFunc();
+        }
+    };
+    
 
     return (
         <div className="sign-container">
             <h1>Sign Up</h1>
-            <input type="text" placeholder="Username" className="input-field" />
-            <input type="email" placeholder="Email" className="input-field" />
-            <input type="password" placeholder="Password" className="input-field" />
+            <input
+                type="text"
+                placeholder="Username"
+                className="input-field"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+            />
+            <input
+                type="text"
+                placeholder="Name"
+                className="input-field"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+            />
+            <input
+                type="password"
+                placeholder="Password"
+                className="input-field"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+            />
+            <p className='error-message'>{errorMessage}</p>
             <button className="sign-button" onClick={GoToAccount}>Sign Up</button>
             <p className="alternative-action">
                 Already have an account? <a onClick={GoToSignIn}>Sign In!</a>

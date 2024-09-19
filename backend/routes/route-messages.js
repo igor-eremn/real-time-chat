@@ -1,5 +1,5 @@
 const express = require('express');
-const MessageModel = require('../models/message-model.js');
+const MessageModel = require('../models/model-message.js');
 const { ObjectId } = require('mongodb');
 
 module.exports = (client) => {
