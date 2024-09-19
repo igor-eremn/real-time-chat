@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Login.css';
 
-const SignIn = ({ flipFunc, specialFlipFunc }) => {
+const SignIn = ({ flipFunc, specialFlipFunc, setUserId }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState("");
@@ -28,6 +28,7 @@ const SignIn = ({ flipFunc, specialFlipFunc }) => {
                 return false;
             } else {
                 console.log('User signed in successfully:', data);
+                setUserId(data.userId);
                 return true;
             }
         } catch (err) {
@@ -45,6 +46,8 @@ const SignIn = ({ flipFunc, specialFlipFunc }) => {
         const success = await handleSignIn();
 
         if (success) {
+            setUsername('');
+            setPassword('');
             specialFlipFunc();
         }
     };

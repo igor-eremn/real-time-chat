@@ -8,18 +8,17 @@
     width: 300px;
     margin: 0 auto;
     padding-top: 50px;
-    height: 500px;
+    height: 550px; /* Increased height to accommodate new elements */
     border: 1px solid white;
     border-radius: 50px;
-  }
-  
-  .sign-container h1 {
+}
 
+.sign-container h1 {
     font-size: 2rem;
     margin-bottom: 3rem;
-  }
-  
-  .input-field {
+}
+
+.input-field {
     width: 100%;
     padding: 0.75rem;
     margin-bottom: 1rem;
@@ -27,9 +26,9 @@
     background-color: transparent;
     color: #fff;
     font-size: 1rem;
-  }
-  
-  .sign-button {
+}
+
+.sign-button {
     position: absolute;
     bottom: 100px;
     width: 100px;
@@ -43,22 +42,73 @@
     text-transform: lowercase;
     border: 1px solid black;
     transition: all 0.3s;
-  }
-  
-  .sign-button:hover {
+}
+
+.sign-button:hover {
     background-color: #444;
     border: 1px solid white;
-  }
-  
-  .alternative-action {
+}
+
+.alternative-action {
     position: absolute;
     bottom: 150px;
     margin-top: 1rem;
     font-size: 0.9rem;
-  }
-  
-  .alternative-action a {
+}
+
+.alternative-action a {
     color: #fff;
     text-decoration: underline;
     cursor: pointer;
-  }
+}
+
+.gender-selection {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.gender-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.gender-input[type="checkbox"] {
+    display: none;
+}
+
+.custom-checkbox {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    position: relative;
+    cursor: pointer;
+    margin-right: 8px;
+}
+
+.custom-checkbox::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background-color: #fff;
+    border-radius: 2px;
+    opacity: 0;
+}
+
+.gender-input[type="checkbox"]:checked + .custom-checkbox::after {
+    opacity: 1;
+}
+
+.error-message {
+    color: red;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+}

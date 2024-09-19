@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import './Login.css';
 
-const SignUp = ({ flipFunc, specialFlipFunc }) => {
+const SignUp = ({ flipFunc, specialFlipFunc, setUserId }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [gender, setGender] = useState('');
     const [userInfo, setUserInfo] = useState(null);
     const [error, setError] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
@@ -17,7 +18,8 @@ const SignUp = ({ flipFunc, specialFlipFunc }) => {
         const newUserInfo = {
             username,
             name,
-            password
+            password,
+            gender
         };
         setUserInfo(newUserInfo);
     
@@ -37,43 +39,43 @@ const SignUp = ({ flipFunc, specialFlipFunc }) => {
                     console.warn("Conflict: Username already exists");
                     setErrorMessage(data.message);
                     setError(true);
-                    return false; // Signup failed
+                    return false;
                 } else if (response.status === 400) {
                     console.warn("Bad Request: Missing fields or invalid data");
                     setErrorMessage(data.message);
                     setError(true);
-                    return false; // Signup failed
+                    return false;
                 } else {
                     console.warn(`Error ${response.status}: ${response.statusText}`);
                     setErrorMessage(data.message);
                     setError(true);
-                    return false; // Signup failed
+                    return false;
                 }
             } else {
                 console.log('User signed up successfully:', data);
                 setErrorMessage("");
-                setError(false); // Reset error on success
-                return true; // Signup successful
+                setUserId(data.userId);
+                setError(false);
+                return true;
             }
         } catch (err) {
             console.warn('Error:', err);
             setError(true);
             setErrorMessage('Something went wrong. Please try again.');
-            return false; // Signup failed
+            return false;
         }
     };
-    
-    
-      
 
     const GoToAccount = async () => {
         const success = await handleSignUp();
-
         if (success) {
+            setUsername('');
+            setPassword('');
+            setName('');
+            setGender('');
             specialFlipFunc();
         }
     };
-    
 
     return (
         <div className="sign-container">
@@ -81,7 +83,7 @@ const SignUp = ({ flipFunc, specialFlipFunc }) => {
             <input
                 type="text"
                 placeholder="Username"
-                className="input-field"
+                className="input-field username-field"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
             />
@@ -99,6 +101,28 @@ const SignUp = ({ flipFunc, specialFlipFunc }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
             />
+            <div className="gender-selection">
+                <label className="gender-label">
+                    <input
+                        type="checkbox"
+                        className="gender-input"
+                        checked={gender === 'male'}
+                        onChange={() => setGender('male')}
+                    />
+                    <span className="custom-checkbox male"></span>
+                    Male
+                </label>
+                <label className="gender-label">
+                    <input
+                        type="checkbox"
+                        className="gender-input"
+                        checked={gender === 'female'}
+                        onChange={() => setGender('female')}
+                    />
+                    <span className="custom-checkbox female"></span>
+                    Female
+                </label>
+            </div>
             <p className='error-message'>{errorMessage}</p>
             <button className="sign-button" onClick={GoToAccount}>Sign Up</button>
             <p className="alternative-action">

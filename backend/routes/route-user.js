@@ -24,15 +24,15 @@ module.exports = (client) => {
   // (1) Create new user (sign up)
   router.post('/sign-up', async (req, res) => {
     try {
-      const { username, name, password } = req.body;
-      if (!username || !name || !password) {
+      const { username, name, password, gender } = req.body;
+      if (!username || !name || !password || !gender) {
         return res.status(400).json({ message: "Missing required fields" });
       }
       const existingUser = await userModel.findUserByUsername(username);
       if (existingUser) {
         return res.status(409).json({ message: "Username already exists" });
       }
-      const result = await userModel.createUser({ username, name, password });
+      const result = await userModel.createUser({ username, name, password, gender });
       console.log("🚀 ~ router.sign-up.post ~ result:", result)
       res.status(201).json({ message: "User created successfully", userId: result.insertedId });
     } catch (error) {
@@ -46,30 +46,35 @@ module.exports = (client) => {
     
     try {
         const user = await userModel.findUserByUsername(username);
-        console.log("🚀 ~ router.post ~ user:", user)
+        console.log("🚀 ~ router.post ~ user:", user);
         if (!user) {
           return res.status(404).json({ message: "User not found" });
         }
-        await bcrypt.compare(password, user.password, (err, passwordMatch) => {
-          if (err) {
-            console.log("🚀 ~ awaitbcrypt.compare ~ err:", err)
-            return res.status(500).json({ message: "Internal server error" });
-          }
-          if (!passwordMatch) {
-            console.log("🚀 ~ awaitbcrypt.compare ~ passwordMatch:", passwordMatch)
-            return res.status(401).json({ message: "Incorrect password" });
-          }
-        });
+        
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+          console.log("🚀 ~ bcrypt.compare ~ passwordMatch:", passwordMatch);
+          return res.status(401).json({ message: "Incorrect password" });
+        }
+        
+        // Only send response if password comparison was successful
         res.status(200).json({ message: "Login successful", userId: user._id });
     } catch (error) {
-        console.log("🚀 ~ router.post ~ error:", error)
+        console.log("🚀 ~ router.post ~ error:", error);
         res.status(500).json({ message: "Internal server error" });
     }
   });
 
+
   // (3) Get user by ID
   router.get('/:userId', userExists, (req, res) => {
+    // Destructure to remove password from the user object
     const { password, ...userWithoutPassword } = req.user;
+
+    // Log the user without the password for debugging (optional)
+    console.log("🚀 ~ router.get ~ userWithoutPassword:", userWithoutPassword);
+
+    // Send the response, excluding the password
     res.json(userWithoutPassword);
   });
 

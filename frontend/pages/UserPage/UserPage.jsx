@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../basic-styling.css';
 import './UserPageStyle.css';
 import Header from '../../components/header/Header';
@@ -7,65 +7,54 @@ import SignIn from '../../components/login/SignIn';
 import SignUp from '../../components/login/SignUp';
 import Account from '../../components/login/Account';
 
-class UserPage extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      isFlipped: false,
-      toAccount: false
-    };
-    this.handleClick = this.handleClick.bind(this);
-    this.handleSpecialFlip = this.handleSpecialFlip.bind(this);
-    this.goBackToSignIn = this.goBackToSignIn.bind(this);
-  }
+const UserPage = () => {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [toAccount, setToAccount] = useState(false);
+  const [userId, setUserId] = useState(null);
+  
+  const handleClick = () => {
+    setIsFlipped(!isFlipped);
+  };
 
-  handleClick() {
-    this.setState({ isFlipped: !this.state.isFlipped });
-  }
+  const handleSpecialFlip = () => {
+    setToAccount(true);
+  };
 
-  handleSpecialFlip() {
-    this.setState({ toAccount: true });
-  }
+  const goBackToSignIn = () => {
+    setToAccount(false);
+    setIsFlipped(false);
+    setUserId(null);
+  };
 
-  goBackToSignIn() {
-    this.setState({ toAccount: false, isFlipped: false });
-  }
+  return (
+    <div className="page-container">
+      <div className="page-content">
+        <Header />
+        <div className="user-page-content">
+          <ReactCardFlip 
+            isFlipped={isFlipped || toAccount}
+            flipDirection="horizontal"
+            flipSpeedBackToFront={1.5}
+            flipSpeedFrontToBack={1.5}
+          >
+            <div className="front-component">
+              <SignIn flipFunc={handleClick} specialFlipFunc={handleSpecialFlip} setUserId={setUserId} />
+            </div>
 
-  render() {
-    return (
-      <div className="page-container">
-        <div className="page-content">
-          <Header />
-          <div className="user-page-content">
-            <ReactCardFlip 
-              isFlipped={this.state.isFlipped || this.state.toAccount}
-              flipDirection="horizontal"
-              flipSpeedBackToFront={1.5}
-              flipSpeedFrontToBack={1.5}
-            >
-              {/* Front Component (SignIn) */}
-              <div className="front-component">
-                <SignIn flipFunc={this.handleClick} specialFlipFunc={this.handleSpecialFlip} />
+            {toAccount ? (
+              <div className="back-component-2">
+                <Account goBack={goBackToSignIn} userId={userId}/>
               </div>
-
-              {/* Back Component */}
-              {this.state.toAccount ? (
-                // Account component as "back-component-2"
-                <div className="back-component-2">
-                  <Account goBack={this.goBackToSignIn} />
-                </div>
-              ) : (
-                // Regular SignUp component as back
-                <div className="back-component">
-                  <SignUp flipFunc={this.handleClick} specialFlipFunc={this.handleSpecialFlip} />
-                </div>
-              )}
-            </ReactCardFlip>
-          </div>
+            ) : (
+              <div className="back-component">
+                <SignUp flipFunc={handleClick} specialFlipFunc={handleSpecialFlip} setUserId={setUserId} />
+              </div>
+            )}
+          </ReactCardFlip>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default UserPage;

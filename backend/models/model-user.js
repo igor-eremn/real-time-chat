@@ -6,13 +6,14 @@ class UserModel {
     this.userCollection = client.db('DB1').collection('chat-users');
   }
 
-  async createUser({ username, name, password }) {
+  async createUser({ username, name, password, gender }) {
     const hashedPassword = await bcrypt.hash(password, 10);
     console.log("🚀 ~ UserModel ~ createUser ~ hashedPassword:", hashedPassword)
     const userData = {
       username,
       name,
       password: hashedPassword,
+      gender,
       created: new Date()
     };
     
