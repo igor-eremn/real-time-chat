@@ -12,7 +12,8 @@
   
   .page-content {
     width: 100%;
-    max-width: 1200px;
+    height: 80%;
     box-sizing: border-box;
+    padding-inline: 1rem;
   }
   

@@ -1,0 +1,11 @@
+.user-page-content{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    padding-top: 50px;
+}
+
