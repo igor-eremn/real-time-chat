@@ -5,18 +5,20 @@ class ChatModel {
     this.chatCollection = client.db('DB1').collection('chat-chats');
   }
 
-  async createChat({ name, description, participants, createdBy, isGroupChat }) {
+  async createChat({ name, description, participants}) {
     const chatData = {
       name,
       description,
       participants: participants.map(id => new ObjectId(id)),
-      createdBy: new ObjectId(createdBy),
       createdAt: new Date(),
       updatedAt: new Date(),
-      isGroupChat
       //can add: lastMessage, numberOfMessages, numberofParticipants
     };
     return await this.chatCollection.insertOne(chatData);
+  }
+
+  async getAllChats() {
+    return await this.chatCollection.find().toArray();
   }
 
   async getChatById(chatId) {

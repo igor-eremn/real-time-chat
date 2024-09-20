@@ -8,7 +8,16 @@ function HomePage() {
       <div className="page-content">
         <Header />
         <h1>Home Page</h1>
-        <p>Welcome to the Home Page!</p>
+        <p>Welcome to the ChatIT!</p>
+        <p>Current features:</p>
+        <p>- Login</p>
+        <p>- Register</p>
+        <p>- Account</p>
+        <p>Future:</p>
+        <p>- 1 Chat room</p>
+        <p>- Join/Leave chat room</p>
+        <p>- Send messages</p>
+        <p>- Update account</p>
       </div>
     </div>
   );

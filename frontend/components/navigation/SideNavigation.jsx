@@ -8,9 +8,7 @@ const SideNavigation = () => {
 
   const topMenuItems = [
     { icon: <IoHome size={24} />, label: 'Home', path: '/' },
-    { icon: <IoChatbubble size={24} />, label: '1Room', path: '/chat' },
-    { icon: <IoChatbubble size={24} />, label: '2Room', path: '/chat' },
-    { icon: <IoChatbubble size={24} />, label: '3Room', path: '/chat' },
+    { icon: <IoChatbubble size={24} />, label: 'Chats', path: '/chat' },
   ];
 
   return (

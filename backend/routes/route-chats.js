@@ -23,23 +23,33 @@ module.exports = (client) => {
   // (1) Create new chat
   router.post('/create', async (req, res) => {
     try {
-      const { name, description, participants, createdBy, isGroupChat } = req.body;
-      if (!name || !participants || !createdBy) {
+      const { name, description, participants } = req.body;
+      if (!name || !participants) {
         return res.status(400).json({ message: "Missing required fields" });
       }
-      const result = await chatModel.createChat({ name, description, participants, createdBy, isGroupChat });
+      const result = await chatModel.createChat({ name, description, participants });
       res.status(201).json({ message: "Chat created successfully", chatId: result.insertedId });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // (2) Get chat by ID
+  // (2) Get all chats
+  router.get('/', async (req, res) => {
+    try {
+      const chats = await chatModel.getAllChats();
+      res.json(chats);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // (3) Get chat by ID
   router.get('/:chatId', chatExists, (req, res) => {
     res.json(req.chat);
   });
 
-  // (3) Update chat
+  // (4) Update chat
   router.put('/:chatId', chatExists, async (req, res) => {
     try {
       const result = await chatModel.updateChat(req.params.chatId);
@@ -52,7 +62,7 @@ module.exports = (client) => {
     }
   });
 
-  // (4) Delete chat
+  // (5) Delete chat
   router.delete('/:chatId', chatExists, async (req, res) => {
     try {
       await chatModel.deleteChat(req.params.chatId);
@@ -62,7 +72,7 @@ module.exports = (client) => {
     }
   });
 
-  // (5) Get user's chats
+  // (6) Get user's chats
   router.get('/user/:userId', async (req, res) => {
     try {
       const chats = await chatModel.getUserChats(req.params.userId);
@@ -72,21 +82,22 @@ module.exports = (client) => {
     }
   });
 
-  // (6) Add participant to chat
+  // (7) Add participant to chat
   router.post('/:chatId/participants', chatExists, async (req, res) => {
     try {
+      const chatId = req.params.chatId;
       const { userId } = req.body;
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
       }
-      await chatModel.addParticipant(req.params.chatId, userId);
+      await chatModel.addParticipant(chatId, userId);
       res.json({ message: "Participant added successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // (7) Remove participant from chat
+  // (8) Remove participant from chat
   router.delete('/:chatId/participants/:userId', chatExists, async (req, res) => {
     try {
       await chatModel.removeParticipant(req.params.chatId, req.params.userId);
@@ -96,7 +107,7 @@ module.exports = (client) => {
     }
   });
 
-  // (8) Search chats
+  // (9) Search chats
   router.get('/search', async (req, res) => {
     try {
       const { query } = req.query;
@@ -110,7 +121,7 @@ module.exports = (client) => {
     }
   });
 
-  // (9) Check if user is in chat
+  // (10) Check if user is in chat
   router.get('/:chatId/participants/:userId', chatExists, async (req, res) => {
     try {
       const isInChat = await chatModel.isUserInChat(req.params.chatId, req.params.userId);

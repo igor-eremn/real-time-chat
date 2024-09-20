@@ -7,11 +7,10 @@ import SignIn from '../../components/login/SignIn';
 import SignUp from '../../components/login/SignUp';
 import Account from '../../components/login/Account';
 
-const UserPage = () => {
+const UserPage = ({ setUser, logout, userId }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [toAccount, setToAccount] = useState(false);
-  const [userId, setUserId] = useState(null);
-  
+
   const handleClick = () => {
     setIsFlipped(!isFlipped);
   };
@@ -23,34 +22,43 @@ const UserPage = () => {
   const goBackToSignIn = () => {
     setToAccount(false);
     setIsFlipped(false);
-    setUserId(null);
+    setUser(null); // Clear user session on sign-out
   };
 
+  // If userId is available, show Account page, otherwise show SignIn/SignUp
   return (
     <div className="page-container">
       <div className="page-content">
         <Header />
         <div className="user-page-content">
-          <ReactCardFlip 
-            isFlipped={isFlipped || toAccount}
-            flipDirection="horizontal"
-            flipSpeedBackToFront={1.5}
-            flipSpeedFrontToBack={1.5}
-          >
-            <div className="front-component">
-              <SignIn flipFunc={handleClick} specialFlipFunc={handleSpecialFlip} setUserId={setUserId} />
-            </div>
+          {userId ? (
+            <Account goBack={goBackToSignIn} userId={userId} logout={logout} />
+          ) : (
+            <ReactCardFlip 
+              isFlipped={isFlipped || toAccount}
+              flipDirection="horizontal"
+              flipSpeedBackToFront={1.5}
+              flipSpeedFrontToBack={1.5}
+            >
+              {/* SignIn Form */}
+              <div className="front-component">
+                <SignIn 
+                  flipFunc={handleClick} 
+                  specialFlipFunc={handleSpecialFlip} 
+                  setUserId={setUser}
+                />
+              </div>
 
-            {toAccount ? (
-              <div className="back-component-2">
-                <Account goBack={goBackToSignIn} userId={userId}/>
-              </div>
-            ) : (
+              {/* SignUp Form */}
               <div className="back-component">
-                <SignUp flipFunc={handleClick} specialFlipFunc={handleSpecialFlip} setUserId={setUserId} />
+                <SignUp 
+                  flipFunc={handleClick} 
+                  specialFlipFunc={handleSpecialFlip} 
+                  setUserId={setUser}
+                />
               </div>
-            )}
-          </ReactCardFlip>
+            </ReactCardFlip>
+          )}
         </div>
       </div>
     </div>
