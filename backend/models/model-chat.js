@@ -5,6 +5,7 @@ class ChatModel {
     this.chatCollection = client.db('DB1').collection('chat-chats');
   }
 
+  // add: lastMessage, numberOfMessages, numberofParticipants
   async createChat({ name, description, participants}) {
     const chatData = {
       name,
@@ -12,7 +13,6 @@ class ChatModel {
       participants: participants.map(id => new ObjectId(id)),
       createdAt: new Date(),
       updatedAt: new Date(),
-      //can add: lastMessage, numberOfMessages, numberofParticipants
     };
     return await this.chatCollection.insertOne(chatData);
   }
@@ -43,14 +43,18 @@ class ChatModel {
   }
 
   async addParticipant(chatId, userId) {
-    return await this.chatCollection.updateOne(
+    await this.chatCollection.updateOne(
       { _id: new ObjectId(chatId) },
       { 
         $addToSet: { participants: new ObjectId(userId) },
         $set: { updatedAt: new Date() }
       }
     );
+    const updatedChat = await this.chatCollection.findOne({ _id: new ObjectId(chatId) }, { projection: { participants: 1 } });
+    
+    return updatedChat.participants;
   }
+  
 
   async removeParticipant(chatId, userId) {
     return await this.chatCollection.updateOne(

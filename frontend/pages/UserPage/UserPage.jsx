@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../basic-styling.css';
-import './UserPageStyle.css';
+import './UserPage.css';
 import Header from '../../components/header/Header';
 import ReactCardFlip from 'react-card-flip';
 import SignIn from '../../components/login/SignIn';

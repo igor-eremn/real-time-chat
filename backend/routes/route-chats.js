@@ -90,8 +90,8 @@ module.exports = (client) => {
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });
       }
-      await chatModel.addParticipant(chatId, userId);
-      res.json({ message: "Participant added successfully" });
+      const updated_participants = await chatModel.addParticipant(chatId, userId);
+      res.json({ message: "Participant added successfully", participants: updated_participants });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

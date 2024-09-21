@@ -7,8 +7,8 @@ import ChatPage from '../pages/ChatPage/ChatPage.jsx';
 import SettingsPage from '../pages/SettingsPage/SettingsPage.jsx';
 import UserPage from '../pages/UserPage/UserPage.jsx';
 
-function App() {
-  const [currentUserId, setCurrentUserId] = React.useState(() => {
+const App = () => {
+  const [currentUserId, setCurrentUserId] = useState(() => {
     return sessionStorage.getItem('currentUserId');
   });
 

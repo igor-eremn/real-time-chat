@@ -7,6 +7,11 @@ const Account = ({ goBack, userId }) => {
     const [username, setUsername] = useState('');
     const [gender, setGender] = useState('');
 
+    const handleSignOut = () => {
+        console.log('User signed out successfully');
+        goBack();
+    }
+
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
@@ -31,7 +36,7 @@ const Account = ({ goBack, userId }) => {
             <p>User Name: {name}</p>
             <p>User username: {username}</p>
             <p>User gender: {gender}</p>
-            <button className="sign-button" onClick={goBack}>Log Out</button>
+            <button className="sign-button" onClick={handleSignOut}>Log Out</button>
         </div>
     );
 };
