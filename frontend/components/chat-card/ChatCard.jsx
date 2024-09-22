@@ -12,6 +12,7 @@ const ChatCard = ({ chatId, chatName, chatDescription, createdAt, participants, 
     }, [chatParticipants, userId]);
 
     const handleClick = async () => {
+        
         setIsJoining(true);
         try {
             const response = await fetch(`http://localhost:3000/chats/${chatId}/participants`, {

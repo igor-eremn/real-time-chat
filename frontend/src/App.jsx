@@ -7,10 +7,14 @@ import ChatPage from '../pages/ChatPage/ChatPage.jsx';
 import SettingsPage from '../pages/SettingsPage/SettingsPage.jsx';
 import UserPage from '../pages/UserPage/UserPage.jsx';
 
+//TODO: fix the problem when signed out, breaks chat window + user page
+
 const App = () => {
   const [currentUserId, setCurrentUserId] = useState(() => {
     return sessionStorage.getItem('currentUserId');
   });
+
+  const isUserSignedIn = currentUserId !== null;
 
   const handleUserLogin = (userId) => {
     setCurrentUserId(userId);
@@ -49,7 +53,7 @@ const App = () => {
               <UserPage 
                 setUser={handleUserLogin} 
                 logout={handleUserLogout} 
-                userId={currentUserId}
+                userId={isUserSignedIn ? currentUserId : undefined}
               />} 
             />
           </Routes>

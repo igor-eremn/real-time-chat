@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { User } from 'lucide-react';
 import './Login.css';
 
 const Account = ({ goBack, userId }) => {
@@ -31,11 +32,15 @@ const Account = ({ goBack, userId }) => {
     return (
         <div className="sign-container">
             <h1>Account</h1>
-            <p>Account component</p>
-            <p>User ID: {userId}</p>
-            <p>User Name: {name}</p>
-            <p>User username: {username}</p>
-            <p>User gender: {gender}</p>
+            <div className={`user-icon ${gender.toLowerCase()}`}>
+                <User size={48} />
+            </div>
+            <div className="user-info">
+                <h2>{name}</h2>
+                <p className="user-id">ID: {userId}</p>
+            </div>
+            <p>Username: {username}</p>
+            <p>Gender: {gender}</p>
             <button className="sign-button" onClick={handleSignOut}>Log Out</button>
         </div>
     );

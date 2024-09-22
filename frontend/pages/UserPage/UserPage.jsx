@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../basic-styling.css';
 import './UserPage.css';
 import Header from '../../components/header/Header';
@@ -22,7 +22,7 @@ const UserPage = ({ setUser, logout, userId }) => {
   const goBackToSignIn = () => {
     setToAccount(false);
     setIsFlipped(false);
-    setUser(null); // Clear user session on sign-out
+    setUser(undefined); // Clear user session on sign-out
   };
 
   // If userId is available, show Account page, otherwise show SignIn/SignUp
@@ -31,7 +31,7 @@ const UserPage = ({ setUser, logout, userId }) => {
       <div className="page-content">
         <Header />
         <div className="user-page-content">
-          {userId ? (
+          {(userId != undefined) ? (
             <Account goBack={goBackToSignIn} userId={userId} logout={logout} />
           ) : (
             <ReactCardFlip 

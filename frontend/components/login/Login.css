@@ -112,3 +112,37 @@
     font-size: 0.8rem;
     margin-top: 0.5rem;
 }
+
+/* New styles for Account component */
+.user-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.user-icon.male {
+    background-color: #add8e6;
+}
+
+.user-icon.female {
+    background-color: #ffc0cb;
+}
+
+.user-info {
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.user-info h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.user-id {
+    font-size: 0.9rem;
+    color: #999;
+}
