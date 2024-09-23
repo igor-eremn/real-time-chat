@@ -3,9 +3,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import SideNavigation from '../components/navigation/SideNavigation.jsx';
 import HomePage from '../pages/HomePage/HomePage.jsx';
-import ChatPage from '../pages/ChatPage/ChatPage.jsx';
+import ChatHomePage from '../pages/ChatHomePage/ChatHomePage.jsx';
 import SettingsPage from '../pages/SettingsPage/SettingsPage.jsx';
 import UserPage from '../pages/UserPage/UserPage.jsx';
+import ChatPage from '../pages/ChatPage/ChatPage.jsx';
 
 //TODO: fix the problem when signed out, breaks chat window + user page
 
@@ -32,24 +33,25 @@ const App = () => {
         <SideNavigation />
         <main className="main-content">
           <Routes>
-            <Route path="/"           element={
+            <Route path="/" element={
               <HomePage 
               />} 
             />
-            <Route path="/home"       element={
+            <Route path="/home" element={
               <HomePage 
               />} 
             />
-            <Route path="/chat"       element={
-              <ChatPage 
-                userId={currentUserId} 
-              />} 
+            <Route path="/chats" element={
+              <ChatHomePage userId={currentUserId} />} 
             />
-            <Route path="/settings"   element={
+            <Route path="/chat/:chatId" element={
+              <ChatPage userId={currentUserId} />} 
+            />
+            <Route path="/settings" element={
               <SettingsPage 
               />} 
             />
-            <Route path="/user"       element={
+            <Route path="/user" element={
               <UserPage 
                 setUser={handleUserLogin} 
                 logout={handleUserLogout} 

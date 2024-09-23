@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import './ChatCard.css';
 
-const ChatCard = ({ chatId, chatName, chatDescription, createdAt, participants, userId }) => {
+const ChatCard = ({ chatId, chatName, chatDescription, createdAt, participants, userId, click }) => {
     const [isUserParticipant, setIsUserParticipant] = useState(false);
     const [chatParticipants, setChatParticipants] = useState(participants);
     const [isJoining, setIsJoining] = useState(false);
@@ -12,6 +12,10 @@ const ChatCard = ({ chatId, chatName, chatDescription, createdAt, participants, 
     }, [chatParticipants, userId]);
 
     const handleClick = async () => {
+        click(chatId);
+    };
+
+    const handleJoinClick = async () => {
         
         setIsJoining(true);
         try {
@@ -33,22 +37,22 @@ const ChatCard = ({ chatId, chatName, chatDescription, createdAt, participants, 
     };
 
     return (
-        <div className="chat-card">
-            <div className="chat-card-header">
+        <div className="chat-card" onClick={handleClick}>
+            <div className="chat-card-header" onClick={handleClick}>
                 <h2 className="chat-card-title">{chatName}</h2>
                 <span className="chat-card-date">
                     {format(new Date(createdAt), 'MMM d, yyyy')}
                 </span>
             </div>
             <p className="chat-card-description">{chatDescription}</p>
-            <div className="chat-card-footer">
+            <div className="chat-card-footer" onClick={handleClick}>
                 <button
                     className={`chat-card-button ${
                         isUserParticipant
                             ? 'chat-card-button-joined'
                             : 'chat-card-button-join'
                     }`}
-                    onClick={!isUserParticipant && !isJoining ? handleClick : null}
+                    onClick={!isUserParticipant && !isJoining ? handleJoinClick : null}
                     disabled={isUserParticipant || isJoining}
                 >
                     {isUserParticipant ? 'Joined' : (isJoining ? 'Joining...' : 'Join')}
