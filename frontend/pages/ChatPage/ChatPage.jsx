@@ -9,33 +9,58 @@ const ChatPage = ({ userId }) => {
     const [newMessage, setNewMessage] = useState("");
 
     useEffect(() => {
-        console.log('Chat ID from URL:', chatId);
-        const fetchedMessages = [
-            { id: 1, text: 'Hello' },
-            { id: 2, text: 'How are you?' },
-            { id: 3, text: 'I am fine, thanks!' },
-            { id: 4, text: 'Hello' },
-            { id: 5, text: 'How are you?' },
-            { id: 6, text: 'I am fine, thanks!' },
-            { id: 7, text: 'Hello' },
-            { id: 8, text: 'How are you?' },
-            { id: 9, text: 'I am fine, thanks!' },
-            { id: 10, text: 'Hello' },
-            { id: 11, text: 'How are you?' },
-            { id: 12, text: 'I am fine, thanks!' },
-            { id: 13, text: 'Hello' },
-            { id: 14, text: 'How are you?' },
-            { id: 15, text: 'I am fine, thanks!' },
-        ];
-        setMessages(fetchedMessages);
+        const fetchedMessages = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/messages/chat/${chatId}`);
+                if (!response.ok) {
+                    console.log('Error fetching messages:', response.statusText);
+                    return;
+                }
+                const data = await response.json();
+                console.log(data);
+                setMessages(data);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchedMessages();
     }, [chatId]);
 
-    const handleSendMessage = () => {
-        if (newMessage.trim()) {
-            setMessages([...messages, { id: messages.length + 1, text: newMessage }]);
-            setNewMessage("");
+    const handleSendMessage = async () => {
+        console.log(userId);
+        if (userId === null) {
+            window.location.href = '/user';
+        } else {
+            if (newMessage.trim()) {
+                try {
+                    const response = await fetch(`http://localhost:3000/messages/create`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            messageContent: newMessage,
+                            sender: userId,
+                            chatId: chatId
+                        })
+                    });
+                    
+                    if (!response.ok) {
+                        console.error('Error posting message:', response.statusText);
+                        return;
+                    }
+    
+                    const savedMessage = await response.json();
+                    setMessages([...messages, savedMessage]);
+                    setNewMessage("");
+                } catch (err) {
+                    console.error('Error sending message:', err);
+                }
+            }
         }
     };
+    
 
     return (
         <div className="chat-page-container">
@@ -43,8 +68,8 @@ const ChatPage = ({ userId }) => {
             <div className="chat-content">
                 <div className="messages-container">
                     {messages.map(message => (
-                        <div key={message.id} className="message">
-                            {message.text}
+                        <div key={message._id} className="message">
+                            {message.messageContent}
                         </div>
                     ))}
                 </div>

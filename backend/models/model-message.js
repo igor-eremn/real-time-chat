@@ -18,12 +18,12 @@ class MessageModel {
           sender: new ObjectId(sender),
           chatId: new ObjectId(chatId),
           timeSent: new Date(),
-          reactions: []
         };
 
         // Insert the new message
-        await this.messageCollection.insertOne(messageData, { session });
-
+        let result = await this.messageCollection.insertOne(messageData, { session });
+        console.log("🚀 ~ MessageModel ~ awaitsession.withTransaction ~ result:", result)
+        
         // Check the message count for this chat
         const count = await this.getMessageCount(chatId);
 
@@ -31,9 +31,8 @@ class MessageModel {
         if (count > this.MESSAGE_LIMIT) {
           await this.deleteOldestMessage(chatId, session);
         }
+        return result;
       });
-
-      return { success: true };
     } finally {
       await session.endSession();
     }

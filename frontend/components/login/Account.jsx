@@ -16,7 +16,7 @@ const Account = ({ goBack, userId }) => {
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/users/${userId}`);
+                const response = await fetch(`http://localhost:3000/users/${userId ? userId : ''}`);
                 const data = await response.json();
                 setUserInfo(data);
                 setName(data.name);

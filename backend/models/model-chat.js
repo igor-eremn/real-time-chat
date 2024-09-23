@@ -14,7 +14,9 @@ class ChatModel {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    return await this.chatCollection.insertOne(chatData);
+    let result = await this.chatCollection.insertOne(chatData);
+    console.log("🚀 ~ ChatModel ~ createChat ~ result:", result)
+    return result;
   }
 
   async getAllChats() {
