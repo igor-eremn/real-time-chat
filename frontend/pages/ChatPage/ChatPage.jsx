@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';  // Import Socket.IO client
 import Header from '../../components/header/Header';
 import './ChatPage.css';
 
@@ -7,6 +8,28 @@ const ChatPage = ({ userId }) => {
     const { chatId } = useParams();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
+    const [socket, setSocket] = useState(null);
+    const messagesEndRef = useRef(null);
+
+    useEffect(() => {
+        const newSocket = io('http://localhost:3000');
+        setSocket(newSocket);
+
+        newSocket.emit('joinRoom', chatId);
+        newSocket.on('messageReceived', (message) => {
+            setMessages((prevMessages) => [...prevMessages, message]);
+        });
+
+        return () => {
+            newSocket.disconnect();
+        };
+    }, [chatId]);
+
+    useEffect(() => {
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, [messages]);
 
     useEffect(() => {
         const fetchedMessages = async () => {
@@ -17,7 +40,6 @@ const ChatPage = ({ userId }) => {
                     return;
                 }
                 const data = await response.json();
-                console.log(data);
                 setMessages(data);
             } catch (err) {
                 console.error(err);
@@ -28,7 +50,6 @@ const ChatPage = ({ userId }) => {
     }, [chatId]);
 
     const handleSendMessage = async () => {
-        console.log(userId);
         if (userId === null) {
             window.location.href = '/user';
         } else {
@@ -42,17 +63,20 @@ const ChatPage = ({ userId }) => {
                         body: JSON.stringify({
                             messageContent: newMessage,
                             sender: userId,
-                            chatId: chatId
+                            chatId: chatId,
                         })
                     });
-                    
+
                     if (!response.ok) {
                         console.error('Error posting message:', response.statusText);
                         return;
                     }
-    
+
                     const savedMessage = await response.json();
-                    setMessages([...messages, savedMessage]);
+                    if (socket) {
+                        socket.emit('newMessage', savedMessage.newMessage);
+                    }
+
                     setNewMessage("");
                 } catch (err) {
                     console.error('Error sending message:', err);
@@ -60,7 +84,6 @@ const ChatPage = ({ userId }) => {
             }
         }
     };
-    
 
     return (
         <div className="chat-page-container">
@@ -68,10 +91,17 @@ const ChatPage = ({ userId }) => {
             <div className="chat-content">
                 <div className="messages-container">
                     {messages.map(message => (
-                        <div key={message._id} className="message">
-                            {message.messageContent}
+                        <div
+                            key={message._id}
+                            className={`message ${message.sender === userId ? 'message-sent' : 'message-received'}`}
+                        >
+                            {message.sender !== userId && (
+                                <div className={`user-icon ${message.gender === 'male' ? 'blue-circle' : 'pink-circle'}`}></div>
+                            )}
+                            <div className="message-content">{message.messageContent}</div>
                         </div>
                     ))}
+                    <div ref={messagesEndRef} />
                 </div>
                 <div className="message-input-container">
                     <input
@@ -80,6 +110,7 @@ const ChatPage = ({ userId }) => {
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Type your message..."
                         className="message-input"
+                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
                     />
                     <button onClick={handleSendMessage} className="send-button">Send</button>
                 </div>

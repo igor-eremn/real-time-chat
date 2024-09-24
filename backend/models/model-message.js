@@ -1,6 +1,5 @@
-const { ObjectId } = require('mongodb');
-
 //TODO: delete all messages from user when deleting user
+const { ObjectId } = require('mongodb');
 
 class MessageModel {
   constructor(client) {
@@ -9,46 +8,29 @@ class MessageModel {
   }
 
   async createMessage({ messageContent, sender, chatId }) {
-    const session = this.messageCollection.client.startSession();
+    const messageData = {
+      messageContent,
+      sender: new ObjectId(sender),
+      chatId: new ObjectId(chatId),
+      timeSent: new Date(),
+    };
 
-    try {
-      await session.withTransaction(async () => {
-        const messageData = {
-          messageContent,
-          sender: new ObjectId(sender),
-          chatId: new ObjectId(chatId),
-          timeSent: new Date(),
-        };
-
-        // Insert the new message
-        let result = await this.messageCollection.insertOne(messageData, { session });
-        console.log("🚀 ~ MessageModel ~ awaitsession.withTransaction ~ result:", result)
-        
-        // Check the message count for this chat
-        const count = await this.getMessageCount(chatId);
-
-        // If we've exceeded the limit, delete the oldest message
-        if (count > this.MESSAGE_LIMIT) {
-          await this.deleteOldestMessage(chatId, session);
-        }
-        return result;
-      });
-    } finally {
-      await session.endSession();
-    }
-  }
-
-  async getMessageById(messageId) {
-    return await this.messageCollection.findOne({ _id: new ObjectId(messageId) });
+    let result = await this.messageCollection.insertOne(messageData);
+    console.log("🚀 ~ MessageModel ~ awaitsession.withTransaction ~ result:", result)
+    return result;
   }
 
   async getAllChatMessages(chatId) {
     return await this.messageCollection.find(
       { chatId: new ObjectId(chatId) }
     )
-    .sort({ timeSent: -1 }) // Sort by newest first
+    .sort({ timeSent: 1 }) // Sort by newest first
     .limit(this.MESSAGE_LIMIT)
     .toArray();
+  }
+
+  async getMessageById(messageId) {
+    return await this.messageCollection.findOne({ _id: new ObjectId(messageId) });
   }
 
   async updateMessage(messageId, updateData) {

@@ -6,6 +6,30 @@ module.exports = (client) => {
   const router = express.Router();
   const messageModel = new MessageModel(client);
 
+  // (1) Create new message
+  router.post('/create', async (req, res) => {
+    try {
+      const { messageContent, sender, chatId } = req.body;
+      if (!messageContent || !sender || !chatId) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+      const result = await messageModel.createMessage({ messageContent, sender, chatId });
+      console.log("🚀 ~ router.post ~ result:", result)
+      return res.status(201).json({
+        message: "Message created successfully",
+        newMessage: {
+          _id: result.insertedId,
+          messageContent,
+          sender,
+          chatId,
+          timeSent: new Date()
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Middleware to verify if message exists
   const messageExists = async (req, res, next) => {
     const messageId = req.params.messageId;
@@ -19,20 +43,6 @@ module.exports = (client) => {
     req.message = message;
     next();
   };
-
-  // (1) Create new message
-  router.post('/create', async (req, res) => {
-    try {
-      const { messageContent, sender, chatId } = req.body;
-      if (!messageContent || !sender || !chatId) {
-        return res.status(400).json({ message: "Missing required fields" });
-      }
-      const result = await messageModel.createMessage({ messageContent, sender, chatId });
-      res.status(201).json({ message: "Message created successfully", messageId: result.insertedId });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
 
   // (2) Get message by ID
   router.get('/:messageId', messageExists, (req, res) => {
