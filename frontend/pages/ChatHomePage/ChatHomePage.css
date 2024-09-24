@@ -1,18 +1,26 @@
+.page-content {
+  display: flex;
+  flex-direction: column;
+  height: 97vh;
+}
+
 .chat-grid {
   padding-top: 50px;
-    display: grid;
-    grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+@media (min-width: 768px) {
+  .chat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  
-  @media (min-width: 768px) {
-    .chat-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+}
+
+@media (min-width: 1024px) {
+  .chat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  
-  @media (min-width: 1024px) {
-    .chat-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-  }
+}

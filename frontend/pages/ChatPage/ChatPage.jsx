@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';  // Import Socket.IO client
 import Header from '../../components/header/Header';
 import './ChatPage.css';
+import { ArrowBigLeft, Info, BadgePlus, BadgeCheck, MessageCircleOff } from 'lucide-react';
 
 const ChatPage = ({ userId }) => {
     const { chatId } = useParams();
@@ -10,6 +11,7 @@ const ChatPage = ({ userId }) => {
     const [newMessage, setNewMessage] = useState("");
     const [socket, setSocket] = useState(null);
     const messagesEndRef = useRef(null);
+    const navigate = useNavigate();  // For the Back button navigation
 
     useEffect(() => {
         const newSocket = io('http://localhost:3000');
@@ -27,9 +29,9 @@ const ChatPage = ({ userId }) => {
 
     useEffect(() => {
         if (messagesEndRef.current) {
-          messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+            messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-      }, [messages]);
+    }, [messages]);
 
     useEffect(() => {
         const fetchedMessages = async () => {
@@ -88,6 +90,20 @@ const ChatPage = ({ userId }) => {
     return (
         <div className="chat-page-container">
             <Header />
+            <div className="chat-menu">
+                <div className="chat-menu-container">
+                    <div className="chat-menu-section">
+                        <button onClick={() => navigate(-1)} className="back-button"><ArrowBigLeft /></button>
+                    </div>
+                    <div className="chat-menu-section">
+                        <h2 className="chat-name">Chat Name <Info /></h2>
+                    </div>
+                    <div className="chat-menu-section">
+                        <button className="icon-button"><MessageCircleOff /></button>
+                        <button className="icon-button"><BadgePlus /></button>
+                    </div>
+                </div>
+            </div>
             <div className="chat-content">
                 <div className="messages-container">
                     {messages.map(message => (
@@ -117,6 +133,6 @@ const ChatPage = ({ userId }) => {
             </div>
         </div>
     );
-}
+};
 
 export default ChatPage;

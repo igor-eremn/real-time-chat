@@ -4,6 +4,44 @@
     height: 100vh;
 }
 
+.chat-menu-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    padding-top: 20px;
+    margin-bottom: -15px;
+}
+
+.back-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+.chat-menu-section {
+    display: flex;
+    align-items: center;
+}
+
+.chat-name {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 50px;
+}
+
+.icon-button {
+    background: none;
+    border: none;
+    margin-left: 10px;
+    cursor: pointer;
+    color: white;
+}
+
+
+
 .chat-content {
     display: flex;
     flex-direction: column;
@@ -19,9 +57,9 @@
     padding: 10px;
     background-color: #000000;
     margin-bottom: 10px;
+    border-top: 1px solid #ccc;
 }
 
-/* Align messages based on sender */
 .message {
     display: flex;
     align-items: center;
@@ -29,14 +67,13 @@
 }
 
 .message-received {
-    justify-content: flex-start; /* Align left */
+    justify-content: flex-start;
 }
 
 .message-sent {
-    justify-content: flex-end; /* Align right */
+    justify-content: flex-end;
 }
 
-/* User icon styles */
 .user-icon {
     width: 30px;
     height: 30px;
@@ -75,6 +112,9 @@
     font-size: 16px;
     border-radius: 5px;
     margin-right: 10px;
+    background-color: #000000;
+    border: 1px solid white;
+    color:#ffffff;
 }
 
 .send-button {

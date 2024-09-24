@@ -15,8 +15,8 @@ const ChatCard = ({ chatId, chatName, chatDescription, createdAt, participants, 
         click(chatId);
     };
 
-    const handleJoinClick = async () => {
-        
+    const handleJoinClick = async (e) => {
+        e.stopPropagation();
         setIsJoining(true);
         try {
             const response = await fetch(`http://localhost:3000/chats/${chatId}/participants`, {
@@ -26,7 +26,7 @@ const ChatCard = ({ chatId, chatName, chatDescription, createdAt, participants, 
                 },
                 body: JSON.stringify(userId ? { userId } : {}),
             });
-
+    
             const data = await response.json();
             setChatParticipants(data.participants);
         } catch (err) {
@@ -40,9 +40,14 @@ const ChatCard = ({ chatId, chatName, chatDescription, createdAt, participants, 
         <div className="chat-card" onClick={handleClick}>
             <div className="chat-card-header" onClick={handleClick}>
                 <h2 className="chat-card-title">{chatName}</h2>
-                <span className="chat-card-date">
-                    {format(new Date(createdAt), 'MMM d, yyyy')}
-                </span>
+                <div className="chat-card-info">
+                    <span className="chat-card-date">
+                        Made on: {format(new Date(createdAt), 'MMM d, yyyy')}
+                    </span>
+                    <span className="chat-card-participants">
+                        Participants: {chatParticipants.length}
+                    </span>
+                </div>
             </div>
             <p className="chat-card-description">{chatDescription}</p>
             <div className="chat-card-footer" onClick={handleClick}>
