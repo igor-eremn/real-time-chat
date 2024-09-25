@@ -57,7 +57,6 @@ class ChatModel {
     return updatedChat.participants;
   }
   
-
   async removeParticipant(chatId, userId) {
     return await this.chatCollection.updateOne(
       { _id: new ObjectId(chatId) },

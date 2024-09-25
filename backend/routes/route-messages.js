@@ -59,6 +59,18 @@ module.exports = (client) => {
     }
   });
 
+  // (4) Delete all user messages
+  router.delete('/user/:userId', async (req, res) => {
+    try {
+      const result = await messageModel.deleteAllUserMessages(req.params.userId);
+      console.log("🚀 ~ router.delete ~ result:", result)
+      
+      res.json({ message: "All messages deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // (4) Update message
   router.put('/:messageId', messageExists, async (req, res) => {
     try {

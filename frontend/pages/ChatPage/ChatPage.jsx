@@ -5,6 +5,8 @@ import Header from '../../components/header/Header';
 import './ChatPage.css';
 import { ArrowBigLeft, Info, BadgePlus, BadgeCheck, MessageCircleOff } from 'lucide-react';
 
+//TODO: add logs to chat: when somebody joins or leaves, different date
+
 const ChatPage = ({ userId }) => {
     const { chatId } = useParams();
     const [messages, setMessages] = useState([]);
@@ -86,6 +88,48 @@ const ChatPage = ({ userId }) => {
             }
         }
     };
+
+    const handleLeaveChat = async () => {
+        const removeMessages = async (userId) => {
+            try {
+                const response = await fetch(`/user/${userId}`, {
+                    method: 'DELETE',
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to delete messages');
+                }
+                const result = await response.json();
+                console.log(result.message);
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        };
+
+        const removeParticipant = async (chatId, userId) => {
+            try {
+                const response = await fetch(`/${chatId}/participants/${userId}`, {
+                    method: 'DELETE',
+                });
+          
+                if (!response.ok) {
+                    throw new Error('Failed to remove participant');
+                }
+          
+                const result = await response.json();
+                console.log(result.message);
+            } catch (error) {
+                console.error('Error:', error.message);
+            }
+        };
+          
+
+        let result_messages = await removeMessages(userId);
+        let result_particapant = await removeParticipant(chatId, userId);
+        if(result_messages && result_particapant) {
+            window.location.href = '/chats';
+        }
+    };
+
 
     return (
         <div className="chat-page-container">

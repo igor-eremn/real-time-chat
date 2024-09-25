@@ -29,6 +29,10 @@ class MessageModel {
     .toArray();
   }
 
+  async deleteAllUserMessages(userId) {
+    return await this.messageCollection.deleteMany({ sender: new ObjectId(userId) });
+  }
+
   async getMessageById(messageId) {
     return await this.messageCollection.findOne({ _id: new ObjectId(messageId) });
   }
