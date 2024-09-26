@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';  // Import Socket.IO client
 import Header from '../../components/header/Header';
 import './ChatPage.css';
 import { ArrowBigLeft, Info, BadgePlus, BadgeCheck, MessageCircleOff } from 'lucide-react';
+import ChatInfoModal from '../../components/modals/ChatInfoModal';
 
 //TODO: add logs to chat: when somebody joins or leaves, different date
 
@@ -13,8 +14,11 @@ const ChatPage = ({ userId }) => {
     const [newMessage, setNewMessage] = useState("");
     const [socket, setSocket] = useState(null);
     const messagesEndRef = useRef(null);
-    const navigate = useNavigate();  // For the Back button navigation
+    const navigate = useNavigate();
+    const [chatInfo, setChatInfo] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
+    //joining chat room
     useEffect(() => {
         const newSocket = io('http://localhost:3000');
         setSocket(newSocket);
@@ -29,12 +33,14 @@ const ChatPage = ({ userId }) => {
         };
     }, [chatId]);
 
+    //scroll to bottom when new message is added
     useEffect(() => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     }, [messages]);
 
+    //fetching messages when chat room is entered
     useEffect(() => {
         const fetchedMessages = async () => {
             try {
@@ -51,7 +57,23 @@ const ChatPage = ({ userId }) => {
         };
 
         fetchedMessages();
+        fetchChatInfo();
     }, [chatId]);
+
+    const fetchChatInfo = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/chats/${chatId}`);
+            if (!response.ok) {
+                console.log('Error fetching chat info:', response.statusText);
+                return;
+            }
+            const data = await response.json();
+            setChatInfo(data);
+            return;
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     const handleSendMessage = async () => {
         if (userId === null) {
@@ -130,6 +152,13 @@ const ChatPage = ({ userId }) => {
         }
     };
 
+    const handleInfoClick = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
 
     return (
         <div className="chat-page-container">
@@ -140,7 +169,7 @@ const ChatPage = ({ userId }) => {
                         <button onClick={() => navigate(-1)} className="back-button"><ArrowBigLeft /></button>
                     </div>
                     <div className="chat-menu-section">
-                        <h2 className="chat-name">Chat Name <Info /></h2>
+                        <h2 className="chat-name">{chatInfo ? chatInfo.name : ''}<Info className="info-icon" onClick={handleInfoClick} /></h2>
                     </div>
                     <div className="chat-menu-section">
                         <button className="icon-button"><MessageCircleOff /></button>
@@ -175,6 +204,17 @@ const ChatPage = ({ userId }) => {
                     <button onClick={handleSendMessage} className="send-button">Send</button>
                 </div>
             </div>
+
+            <ChatInfoModal
+                isVisible={isModalOpen}
+                onClose={handleCloseModal}
+            >
+                <h2>Name: {chatInfo ? chatInfo.name : ''}</h2>
+                <p>Description: </p>
+                <p>{chatInfo ? chatInfo.description : ''}</p>
+                <p>Number of Participants: {chatInfo ? chatInfo.participants.length : '_'}</p>
+                <p>Created: {chatInfo ? new Date(chatInfo.createdAt).toISOString().split('T')[0] : ''}</p>
+            </ChatInfoModal>
         </div>
     );
 };

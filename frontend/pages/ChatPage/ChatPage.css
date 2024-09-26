@@ -1,7 +1,9 @@
 .chat-page-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 99.8vh;
+    border: 1px solid white;
+    border-radius: 50px;
 }
 
 .chat-menu-container {
@@ -39,8 +41,6 @@
     cursor: pointer;
     color: white;
 }
-
-
 
 .chat-content {
     display: flex;
@@ -103,7 +103,6 @@
     align-items: center;
     padding: 10px;
     border-top: 1px solid #ccc;
-    background-color: rgb(0, 0, 0);
 }
 
 .message-input {
@@ -131,4 +130,8 @@
 .send-button:hover {
     background-color: #ffffff;
     color: rgb(0, 0, 0);
+}
+
+.info-icon{
+    cursor: pointer;
 }
