@@ -9,14 +9,21 @@ import ChatInfoModal from '../../components/modals/ChatInfoModal';
 //TODO: add logs to chat: when somebody joins or leaves, different date
 
 const ChatPage = ({ userId }) => {
-    const { chatId } = useParams();
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [socket, setSocket] = useState(null);
+
     const messagesEndRef = useRef(null);
+
     const navigate = useNavigate();
+
+    const { chatId } = useParams();
     const [chatInfo, setChatInfo] = useState(null);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isUserParticipant, setIsUserParticipant] = useState(false);
+
+    const [isModalInfoOpen, setIsModalInfoOpen] = useState(false);
+    const [isModalLeaveOpen, setIsModalLeaveOpen] = useState(false);
+    const [isModalHaveToJoinOpen, setIsModalHaveToJoinOpen] = useState(false);
 
     //joining chat room
     useEffect(() => {
@@ -59,6 +66,13 @@ const ChatPage = ({ userId }) => {
         fetchedMessages();
         fetchChatInfo();
     }, [chatId]);
+
+    useEffect(() => {
+        if(chatInfo){
+            setIsUserParticipant(chatInfo.participants.includes(userId));
+            console.log(isUserParticipant);
+        }
+    }, [chatInfo]);
 
     const fetchChatInfo = async () => {
         try {
@@ -153,11 +167,21 @@ const ChatPage = ({ userId }) => {
     };
 
     const handleInfoClick = () => {
-        setIsModalOpen(true);
+        setIsModalInfoOpen(true);
+    };
+
+    const handleLeaveClick = () => {
+        setIsModalLeaveOpen(true);
+    };
+
+    const handleHaveToJoinClick = () => {
+        setIsModalHaveToJoinOpen(true);
     };
 
     const handleCloseModal = () => {
-        setIsModalOpen(false);
+        setIsModalInfoOpen(false);
+        setIsModalHaveToJoinOpen(false);
+        setIsModalLeaveOpen(false);
     };
 
     return (
@@ -172,8 +196,17 @@ const ChatPage = ({ userId }) => {
                         <h2 className="chat-name">{chatInfo ? chatInfo.name : ''}<Info className="info-icon" onClick={handleInfoClick} /></h2>
                     </div>
                     <div className="chat-menu-section">
-                        <button className="icon-button"><MessageCircleOff /></button>
-                        <button className="icon-button"><BadgePlus /></button>
+                        <button className="icon-button">
+                            {isUserParticipant ? 
+                            <MessageCircleOff className="message-icon"
+                                onClick={handleLeaveClick}
+                            /> : ''}
+                        </button>
+                        <button className="icon-button">
+                            {isUserParticipant ? 
+                            <BadgeCheck className="check-icon"/> : 
+                            <BadgePlus onClick={handleHaveToJoinClick}/>}
+                        </button>
                     </div>
                 </div>
             </div>
@@ -199,14 +232,20 @@ const ChatPage = ({ userId }) => {
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Type your message..."
                         className="message-input"
-                        onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                isUserParticipant ? handleSendMessage() : handleHaveToJoinClick();
+                            }
+                        }}
+                        
                     />
-                    <button onClick={handleSendMessage} className="send-button">Send</button>
+                    <button onClick={isUserParticipant ? handleSendMessage : handleHaveToJoinClick} className="send-button">Send</button>
                 </div>
             </div>
 
+            {/* Modals: Info, Leave, HaveToJoin */}
             <ChatInfoModal
-                isVisible={isModalOpen}
+                isVisible={isModalInfoOpen}
                 onClose={handleCloseModal}
             >
                 <h2>Name: {chatInfo ? chatInfo.name : ''}</h2>
@@ -214,6 +253,25 @@ const ChatPage = ({ userId }) => {
                 <p>{chatInfo ? chatInfo.description : ''}</p>
                 <p>Number of Participants: {chatInfo ? chatInfo.participants.length : '_'}</p>
                 <p>Created: {chatInfo ? new Date(chatInfo.createdAt).toISOString().split('T')[0] : ''}</p>
+            </ChatInfoModal>
+
+            <ChatInfoModal
+                isVisible={isModalLeaveOpen}
+                onClose={handleCloseModal}
+            >
+                <h2>Do you want to leave the chat?</h2>
+                <p>It will remove you from chat participants</p>
+                <p>We will also clear all your messages</p>
+            </ChatInfoModal>
+
+            <ChatInfoModal
+                isVisible={isModalHaveToJoinOpen}
+                onClose={handleCloseModal}
+            >
+                <h2>Do you want to join the chat?</h2>
+                <p>You will be added to chat participants</p>
+                <p>You will be able to send messages</p>
+                <p className="join_text">{'> > > >  '}CLICK ME TO JOIN {'  < < < <'}</p>
             </ChatInfoModal>
         </div>
     );

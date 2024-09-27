@@ -135,3 +135,26 @@
 .info-icon{
     cursor: pointer;
 }
+.info-icon:hover{
+    color:rgb(58, 73, 73);
+}
+
+.check-icon{
+    cursor: initial;
+}
+.check-icon:hover{
+    color:chartreuse;
+}
+
+.message-icon:hover{
+    color:salmon;
+}
+
+.join_text{
+    cursor: pointer;
+    text-align: center;
+    color: white;
+}
+.join_text:hover{
+    color:rgb(131, 221, 176);
+}
