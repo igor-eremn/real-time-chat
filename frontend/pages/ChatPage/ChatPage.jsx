@@ -25,20 +25,41 @@ const ChatPage = ({ userId }) => {
     const [isModalLeaveOpen, setIsModalLeaveOpen] = useState(false);
     const [isModalHaveToJoinOpen, setIsModalHaveToJoinOpen] = useState(false);
 
-    //joining chat room
+    // Joining chat room and handling message updates
     useEffect(() => {
+        // Establish WebSocket connection
         const newSocket = io('http://localhost:3000');
         setSocket(newSocket);
 
+        // Join the specific chat room
         newSocket.emit('joinRoom', chatId);
+
+        // Listen for new messages and append them to the message list
         newSocket.on('messageReceived', (message) => {
             setMessages((prevMessages) => [...prevMessages, message]);
         });
 
+        // Clean up the WebSocket connection on unmount or when chatId changes
         return () => {
             newSocket.disconnect();
         };
     }, [chatId]);
+
+    useEffect(() => {
+        if (socket) {
+            socket.on('removeUserMessages', (data) => {
+                const { userId } = data;
+                
+                // Filter out messages that belong to the user who left
+                setMessages((prevMessages) => prevMessages.filter((msg) => msg.userId !== userId));
+            });
+    
+            return () => {
+                socket.off('removeUserMessages');  // Clean up event listener on unmount
+            };
+        }
+    }, [socket]);    
+
 
     //scroll to bottom when new message is added
     useEffect(() => {
@@ -74,6 +95,7 @@ const ChatPage = ({ userId }) => {
             console.log(isUserParticipant);
         }
     }, [chatInfo]);
+    
 
     const fetchChatInfo = async () => {
         try {
@@ -135,7 +157,7 @@ const ChatPage = ({ userId }) => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        userId: userId,
+                        userId: userId,  // Only delete this user's messages
                     }),
                 });
                 if (!response.ok) {
@@ -148,17 +170,15 @@ const ChatPage = ({ userId }) => {
                 console.error('Error:', error.message);
             }
         };
-
+    
         const removeParticipant = async (chatId, userId) => {
             try {
                 const response = await fetch(`http://localhost:3000/chats/${chatId}/participants/${userId}`, {
                     method: 'DELETE',
                 });
-          
                 if (!response.ok) {
                     throw new Error('Failed to remove participant');
                 }
-          
                 const result = await response.json();
                 console.log(result.message);
                 return result.success;
@@ -166,15 +186,16 @@ const ChatPage = ({ userId }) => {
                 console.error('Error:', error.message);
             }
         };
-          
-
+    
         let result_messages = await removeMessages(userId);
-        let result_particapant = await removeParticipant(chatId, userId);
+        let result_participant = await removeParticipant(chatId, userId);
         handleCloseModal();
-        if(result_messages && result_particapant) {
+    
+        if (result_messages && result_participant) {
+            socket.emit('clearUserMessages', { chatId, userId });
             navigate(-1);
         }
-    };
+    }; 
 
     const handleInfoClick = () => {
         setIsModalInfoOpen(true);

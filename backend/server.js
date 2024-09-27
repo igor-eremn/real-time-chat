@@ -59,6 +59,13 @@ client.connect()
         console.log(`User joined chat room: ${chatId}`);
       });
 
+      // Handle user leaving and remove their messages
+      socket.on('clearUserMessages', (data) => {
+        const { chatId, userId } = data;
+        console.log(`Removing messages from user: ${userId} in chat room: ${chatId}`);
+        io.to(chatId).emit('removeUserMessages', { userId });
+      });
+
       // Handle disconnection
       socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
