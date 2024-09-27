@@ -101,9 +101,9 @@ module.exports = (client) => {
   router.delete('/:chatId/participants/:userId', chatExists, async (req, res) => {
     try {
       await chatModel.removeParticipant(req.params.chatId, req.params.userId);
-      res.json({ message: "Participant removed successfully" });
+      res.json({ success: true, message: "Participant removed successfully" });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ success: false, message: error.message });
     }
   });
 

@@ -65,9 +65,20 @@ module.exports = (client) => {
       const result = await messageModel.deleteAllUserMessages(req.params.userId);
       console.log("🚀 ~ router.delete ~ result:", result)
       
-      res.json({ message: "All messages deleted successfully" });
+      res.json({ success: true, message: "All messages deleted successfully" });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ success: false, message: error.message });
+    }
+  });
+
+  // delete all messages from specific chat
+  router.delete('/chat/:chatId', async (req, res) => {
+    let userId = req.body.userId;
+    try {
+      const result = await messageModel.deleteAllChatMessages(req.params.chatId, userId);
+      res.json({ success: true, message: "All messages deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
     }
   });
 

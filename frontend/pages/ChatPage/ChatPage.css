@@ -158,3 +158,12 @@
 .join_text:hover{
     color:rgb(131, 221, 176);
 }
+
+.leave_text{
+    cursor: pointer;
+    text-align: center;
+    color: white;
+}
+.leave_text:hover{
+    color:rgb(255, 0, 0);
+}

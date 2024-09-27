@@ -33,6 +33,13 @@ class MessageModel {
     return await this.messageCollection.deleteMany({ sender: new ObjectId(userId) });
   }
 
+  async deleteAllChatMessages(chatId, userId) {
+    return await this.messageCollection.deleteMany({ 
+      chatId: new ObjectId(chatId), 
+      sender: new ObjectId(userId) 
+    });
+  }
+
   async getMessageById(messageId) {
     return await this.messageCollection.findOne({ _id: new ObjectId(messageId) });
   }

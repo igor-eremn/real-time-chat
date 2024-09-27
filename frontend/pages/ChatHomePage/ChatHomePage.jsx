@@ -21,7 +21,6 @@ const ChatHomePage = ({ userId }) => {
   };
 
   const handleChatCardClick = (chatId) => () => {
-    console.log('Chat card clicked:', chatId);
     window.location.href = `/chat/${chatId}`;
   };
 

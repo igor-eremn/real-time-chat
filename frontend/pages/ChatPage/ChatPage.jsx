@@ -58,6 +58,7 @@ const ChatPage = ({ userId }) => {
                 }
                 const data = await response.json();
                 setMessages(data);
+                console.log(userId);
             } catch (err) {
                 console.error(err);
             }
@@ -128,14 +129,21 @@ const ChatPage = ({ userId }) => {
     const handleLeaveChat = async () => {
         const removeMessages = async (userId) => {
             try {
-                const response = await fetch(`/user/${userId}`, {
+                const response = await fetch(`http://localhost:3000/messages/chat/${chatId}`, {
                     method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userId: userId,
+                    }),
                 });
                 if (!response.ok) {
                     throw new Error('Failed to delete messages');
                 }
                 const result = await response.json();
                 console.log(result.message);
+                return result.success;
             } catch (error) {
                 console.error('Error:', error.message);
             }
@@ -143,7 +151,7 @@ const ChatPage = ({ userId }) => {
 
         const removeParticipant = async (chatId, userId) => {
             try {
-                const response = await fetch(`/${chatId}/participants/${userId}`, {
+                const response = await fetch(`http://localhost:3000/chats/${chatId}/participants/${userId}`, {
                     method: 'DELETE',
                 });
           
@@ -153,6 +161,7 @@ const ChatPage = ({ userId }) => {
           
                 const result = await response.json();
                 console.log(result.message);
+                return result.success;
             } catch (error) {
                 console.error('Error:', error.message);
             }
@@ -161,8 +170,9 @@ const ChatPage = ({ userId }) => {
 
         let result_messages = await removeMessages(userId);
         let result_particapant = await removeParticipant(chatId, userId);
+        handleCloseModal();
         if(result_messages && result_particapant) {
-            window.location.href = '/chats';
+            navigate(-1);
         }
     };
 
@@ -184,6 +194,24 @@ const ChatPage = ({ userId }) => {
         setIsModalLeaveOpen(false);
     };
 
+    const handleJoinClick = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/chats/${chatId}/participants`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userId ? { userId } : {}),
+            });
+    
+            const data = await response.json();
+            fetchChatInfo();
+            handleCloseModal();
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     return (
         <div className="chat-page-container">
             <Header />
@@ -193,7 +221,9 @@ const ChatPage = ({ userId }) => {
                         <button onClick={() => navigate(-1)} className="back-button"><ArrowBigLeft /></button>
                     </div>
                     <div className="chat-menu-section">
-                        <h2 className="chat-name">{chatInfo ? chatInfo.name : ''}<Info className="info-icon" onClick={handleInfoClick} /></h2>
+                        <h2 className="chat-name">{chatInfo ? chatInfo.name : ''}
+                            <Info className="info-icon" onClick={handleInfoClick} />
+                        </h2>
                     </div>
                     <div className="chat-menu-section">
                         <button className="icon-button">
@@ -262,6 +292,7 @@ const ChatPage = ({ userId }) => {
                 <h2>Do you want to leave the chat?</h2>
                 <p>It will remove you from chat participants</p>
                 <p>We will also clear all your messages</p>
+                <p className="leave_text" onClick={handleLeaveChat}>{'> > > >  '}CLICK ME TO LEAVE {'  < < < <'}</p>
             </ChatInfoModal>
 
             <ChatInfoModal
@@ -271,7 +302,7 @@ const ChatPage = ({ userId }) => {
                 <h2>Do you want to join the chat?</h2>
                 <p>You will be added to chat participants</p>
                 <p>You will be able to send messages</p>
-                <p className="join_text">{'> > > >  '}CLICK ME TO JOIN {'  < < < <'}</p>
+                <p className="join_text" onClick={handleJoinClick}>{'> > > >  '}CLICK ME TO JOIN {'  < < < <'}</p>
             </ChatInfoModal>
         </div>
     );
